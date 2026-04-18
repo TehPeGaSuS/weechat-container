@@ -80,6 +80,50 @@ docker run -it \
     weechat/weechat \
     weechat -d /home/user/.weechat
 ```
+## Networking
+
+By default, the container runs with an isolated network stack. If you need to
+access WeeChat relay ports (for example, for remote clients), you have two options:
+
+### Expose a range of ports
+You can publish a range of ports from the container to the host using `-p`:
+
+```bash
+docker run -it \
+    -p 1400-1405:1400-1405 \
+    -v $HOME/.weechat-container/config:/home/user/.config/weechat \
+    -v $HOME/.weechat-container/data:/home/user/.local/share/weechat \
+    -v $HOME/.weechat-container/cache:/home/user/.cache/weechat \
+    weechat/weechat
+```
+This maps ports `1400` to `1405` from the container to the same ports on the host.
+> [!NOTE]
+> Port ranges must match on both sides (`host:container`).\
+> Docker does not support remapping ranges to different port numbers.
+
+### Use host networking
+
+Alternatively, you can use the host network stack:
+```bash
+docker run -it \
+    --network host \
+    -v $HOME/.weechat-container/config:/home/user/.config/weechat \
+    -v $HOME/.weechat-container/data:/home/user/.local/share/weechat \
+    -v $HOME/.weechat-container/cache:/home/user/.cache/weechat \
+    weechat/weechat
+```
+With this mode, WeeChat binds directly to the host network interfaces and ports,
+without any port mapping.
+
+> [!WARNING]
+> `--network host` removes network isolation.\
+> Not supported in rootless Docker.\
+> Not available on Docker Desktop (macOS/Windows).
+
+### Which one should I use?
+
+- Use `-p` (recommended): safer, works everywhere, including rootless Docker.
+- Use `--network host`: only if you need direct access to all ports and are running Docker in rootful mode on Linux.
 
 ## Build
 
