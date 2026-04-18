@@ -97,6 +97,7 @@ docker run -it \
     weechat/weechat
 ```
 This maps ports `1400` to `1405` from the container to the same ports on the host.
+
 > [!NOTE]
 > Port ranges must match on both sides (`host:container`).\
 > Docker does not support remapping ranges to different port numbers.
